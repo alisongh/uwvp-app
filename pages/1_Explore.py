@@ -3,7 +3,6 @@ from backend import *
 from manipulateData import *
 import os
 import streamlit as st
-import time
 import warnings
 warnings.filterwarnings('ignore')
 
