@@ -147,7 +147,6 @@ class manipulateData():
         pandas.DataFrame: A temporary DataFrame with the 'Respondent ID', 'Response Date', and the specified category column.
         """
         df = df[["Respondent ID", "End Date", json_data["comment_category"][category][0]]]
-        print(df)
         df.columns = ["Respondent ID", "Response Date", "Comment"]
         df.reset_index(inplace=True)    
         df.replace('', np.nan, inplace=True)

@@ -134,6 +134,7 @@ else:
             st.session_state["responses_df"] = df
             
             st.subheader("Comments Summary")
+
             comment_df = manipulateData.get_comment_df(
                 update_df, 
                 data, 
