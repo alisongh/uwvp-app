@@ -36,6 +36,17 @@ class manipulateData():
     
     @classmethod
     def pivot_df(self, df, question, cols):
+        """
+        This method pivots a DataFrame based on the specified columns and question.
+
+        Parameters:
+        df (pandas.DataFrame): The input DataFrame to be pivoted.
+        question (str): The column name of the question for which the pivot is to be performed.
+        cols (list): A list of column names that will be used as the pivot columns.
+
+        Returns:
+        pandas.DataFrame: A pivoted DataFrame with the specified question and columns.
+        """
         groupby_df = df.groupby(cols)[question].count().reset_index()
         
         groupby_df.loc[len(groupby_df)] = groupby_df.sum(numeric_only=True)
@@ -44,6 +55,17 @@ class manipulateData():
     
     @classmethod
     def get_tmp_df(self, df, data, category):
+        """
+        This method filters the DataFrame based on the specified category and returns a subset of the DataFrame with the 'Respondent ID' and the specified category column.
+
+        Parameters:
+        df (pandas.DataFrame): The input DataFrame to be filtered.
+        data (dict): A dictionary containing the question categories.
+        category (str): The category of questions to be included in the temporary DataFrame.
+
+        Returns:
+        pandas.DataFrame: A temporary DataFrame with the 'Respondent ID' and the specified category column.
+        """
         tmp_col = data["question_category"][category]
         tmp_col.insert(0, "Respondent ID")
         tmp_df = df[tmp_col]
@@ -87,6 +109,20 @@ class manipulateData():
     
     @classmethod
     def get_percentage_df(self, df):
+        """
+        This method calculates the percentage of each category in the DataFrame.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The input DataFrame to be processed.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame with the same columns as the input DataFrame, but with the values of the specified columns divided by the "Grand Total" and multiplied by 100, rounded to 2 decimal places and appended with "%". The "Grand Total" column is removed from the DataFrame.
+
+        """
         col = df.columns.difference([df.columns.to_list()[0], "Grand Total"])
         df[col] = (df[col].div(df["Grand Total"], axis=0).mul(100))
         df["Total Percentages"] = df.drop([df.columns.to_list()[0], df.columns.to_list()[-1]], axis=1).sum(axis=1)
@@ -97,6 +133,19 @@ class manipulateData():
     
     @classmethod
     def get_comment_df(self, df, json_data, category):
+        """
+        This method filters the DataFrame based on the specified category and returns a subset of the DataFrame with the 'Respondent ID', 'End Date', and the specified category column.
+        The column names are then updated and any empty strings are replaced with NaN values.
+        DataFrame rows with NaN values in the 'Respondent ID' or 'End Date' columns are then removed.
+
+        Parameters:
+        df (pandas.DataFrame): The input DataFrame to be filtered.
+        json_data (dict): A dictionary containing the comment categories.
+        category (str): The category of comments to be included in the temporary DataFrame.
+
+        Returns:
+        pandas.DataFrame: A temporary DataFrame with the 'Respondent ID', 'Response Date', and the specified category column.
+        """
         df = df[["Respondent ID", "End Date", json_data["comment_category"][category][0]]]
         df.columns = ["Respondent ID", "Response Date", "Comment"]
         df.reset_index(inplace=True)    
@@ -106,6 +155,16 @@ class manipulateData():
     
     @classmethod
     def concat_dfs(self, uploaded_files, data):
+        """
+        Concatenates multiple DataFrames read from the uploaded Excel files.
+
+        Parameters:
+        uploaded_files (list): A list of file paths to the uploaded Excel files.
+        data (dict): A dictionary containing the necessary information for transforming the DataFrames.
+
+        Returns:
+        pandas.DataFrame: A concatenated DataFrame containing the data from all the uploaded Excel files after transformation.
+        """
         df_list = []
         for i in range(len(uploaded_files)):
             df = pd.read_excel(uploaded_files[i])

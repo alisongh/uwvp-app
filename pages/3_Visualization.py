@@ -16,7 +16,8 @@ st.set_page_config(page_title="Visualization", layout="wide")
 st.sidebar.markdown(config_data["made_by"])
 
 if "update_df" not in st.session_state:
-    st.warning("Please go to Explore page and explore the data first.", icon="🚨")
+    st.warning("Please go to Explore page and explore the data first.", 
+               icon="🚨")
 else:
     update_df = st.session_state.update_df
     tab1, tab2 = st.tabs(["Comments WordCloud", "Charts"])
@@ -28,8 +29,10 @@ else:
         )
         comment_df = update_df[data["question_category"]["comments"]]
         sub_comment_df = comment_df[data["comment_category"][option][0]]
+        # combine comments as a whole string
         comment_string = "".join(sub_comment_df)
-        print(len(comment_string))
+        # Only get the wordcloud for questions with comments
+        # No wordcloud for questions without comments
         if len(comment_string) != 0:
             fig, ax = plt.subplots()
             wc = WordCloud(width = 600,
@@ -55,14 +58,19 @@ else:
         tmp_df = manipulateData.get_tmp_df(update_df, data, option)
         question_df = manipulateData.get_question_df(data, data["question_columns"], tmp_df, option)
         questions = question_df["Questions"]
+        # Get all categories without comments
         categories = question_df.columns[1:-1]
         fig = go.Figure()
         fig = make_subplots(rows=1, cols=len(question_df))
 
         # Adding traces for each question
         for i, question in enumerate(question_df['Questions']):
-            values = question_df.loc[question_df['Questions'] == question, categories].values.flatten()
+            values = question_df.loc[
+                question_df['Questions'] == question, 
+                categories].values.flatten()
+            
             text_values = [str(val) if val != 0 else "0" for val in values]  # Replace zero values with "0"
+            
             trace = go.Bar(
                 x=categories,
                 y=values,
